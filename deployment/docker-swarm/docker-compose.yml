@@ -102,8 +102,8 @@ services:
             - kafka
             - zookeeper
         environment:
-            AD_INTERVALS: 4,8
-            AD_DURATION: 5
+            AD_INTERVALS: 8
+            AD_DURATION: 10 
         deploy:
             replicas: 1
 
@@ -118,7 +118,7 @@ services:
     cdn:
         image: ssai_cdn_service:latest
         ports:
-            - "443:8080"
+            - "80:8080"
         depends_on:
             - ad-insertion-frontend
             - kafka
@@ -180,15 +180,15 @@ services:
         deploy:
             replicas: 1
     
-    video-analytic-ffmpeg:
-        image: video_analytics_service_ffmpeg:latest
-        depends_on:
-            - content-provider
-            - kafka
-            - zookeeper
-        deploy:
-            replicas: 1
-        restart: unless-stopped
+    #video-analytic-ffmpeg:
+    #    image: video_analytics_service_ffmpeg:latest
+    #    depends_on:
+    #        - content-provider
+    #        - kafka
+    #        - zookeeper
+    #    deploy:
+    #        replicas: 1
+    #    restart: unless-stopped
 
     video-analytic-gstreamer:
         image: video_analytics_service_gstreamer:latest
@@ -197,7 +197,7 @@ services:
             - kafka
             - zookeeper
         deploy:
-            replicas: 1
+            replicas: 4
         restart: unless-stopped
 
 secrets:
