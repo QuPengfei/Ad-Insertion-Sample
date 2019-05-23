@@ -21,7 +21,7 @@ class Schedule(object):
                 "seg_time": seg_info["seg_time"]
             },
             "parameters": {
-                "every-nth-frame":3
+                "every-nth-frame":2
             }
         }
         if "initSeg" in seg_info:
