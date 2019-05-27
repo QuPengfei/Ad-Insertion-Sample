@@ -18,7 +18,7 @@ class Schedule(object):
             },
             "pipeline": pipeline,
             "tags":{
-                "seg_time": seg_info["seg_time"]
+                "seg_time": seg_info["seg_analytic_time"]
             },
             "parameters": {
                 "every-nth-frame":2
@@ -33,8 +33,8 @@ class Schedule(object):
             "meta-db": {
                 "stream": seg_info["stream"],
                 "time_range": [
-                    seg_info["seg_time"]-search_interval,
-                    seg_info["seg_time"],
+                    seg_info["seg_transcode_time"]-search_interval,
+                    seg_info["seg_transcode_time"],
                 ],
                 "time_field": "time",
             },

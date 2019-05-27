@@ -73,11 +73,13 @@ def ADPrefetch(ad_uri):
 
 def ADClipDecision(msg, db):
     duration = msg.time_range[1]-msg.time_range[0]
-    for t in range(1):
+    query_times = 4
+    for t in range(query_times):
         print("query db with time range: "+str(msg.time_range[0])+"-"+str(msg.time_range[1]))
         metaData = db.query(msg.content, msg.time_range, msg.time_field)
         if metaData:
             try:
+                print(metaData,flush=True)
                 jdata = json.dumps({
                     "metadata":metaData,
                     "user":{
@@ -88,12 +90,14 @@ def ADClipDecision(msg, db):
                 r = requests.post(ad_decision_server, data=jdata, timeout=timeout)
                 if r.status_code == 200:
                     ad_info = r.json()
-                    print(ad_info,flush=True)
+                    #print(ad_info,flush=True)
                     return ad_info[0]["source"]["uri"]
             except requests.exceptions.RequestException as e:
                 print("Error in ADClipDecision() " + str(e), flush=True)
             return None
-        msg.time_range[0]=msg.time_range[0]-duration
+        time.sleep(1)
+        if t == query_times - 2:
+            msg.time_range[0]=msg.time_range[0]-duration/2
     return None
 
 class KafkaMsgParser(object):
