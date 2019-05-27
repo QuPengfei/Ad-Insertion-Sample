@@ -21,7 +21,7 @@
     },
     {"uri" : "http://ad-content:8080/BTPVP031919F_Intel_Train_FINAL_040319_Generic.mp4",
      "navigation_url" : "http://www.intel.com",
-     "keywords" : ["train","bottle", "sofa", "chair", "family", "bus", "dinningtable", "tvmonitor"],
+     "keywords" : ["train","person", "bottle", "sofa", "chair", "family", "bus", "dinningtable", "tvmonitor"],
      "duration" : "10"
     }
 ]
