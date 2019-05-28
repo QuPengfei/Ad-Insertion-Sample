@@ -127,7 +127,9 @@ def parse_dash(stream_cp_url, mpd, ad_spec, ad_segment=5.0):
 
             sidx=0
             duration=0
+            ahead_analytic=4
             for S in periods[i][AdaptationSet]:
+                print(S,flush=True)
                 S1=ET.SubElement(SegmentTimeline1,_ns("S"),{"t":str(S[0]),"d":str(S[1])})
                 duration=duration+S[1]
 
@@ -136,8 +138,12 @@ def parse_dash(stream_cp_url, mpd, ad_spec, ad_segment=5.0):
 
                 # decipher streams
                 stream=_to_stream(SegmentTemplate1.attrib["media"],Representation1.attrib["id"],int(SegmentTemplate1.attrib["startNumber"])+S[2])
+                stream_to_analytic=_to_stream(SegmentTemplate1.attrib["media"],Representation1.attrib["id"],int(SegmentTemplate1.attrib["startNumber"])+S[2]+ahead_analytic)
                 init_stream=_to_stream(SegmentTemplate1.attrib["initialization"],Representation1.attrib["id"],int(SegmentTemplate1.attrib["startNumber"])+S[2])
-
+                if i == 0 and sidx == 0:
+                    stream_to_analytic=_to_stream(SegmentTemplate1.attrib["media"],Representation1.attrib["id"],int(SegmentTemplate1.attrib["startNumber"])+S[2])
+                print("{} {} {} {}".format(stream,Representation1.attrib["id"],SegmentTemplate1.attrib["startNumber"],S[2]),flush=True)
+ 
                 minfo["segs"][stream]={
                     "stream": stream_cp_url.split("/")[-1],
                     "bandwidth": int(Representation1.attrib["bandwidth"]),
@@ -146,17 +152,24 @@ def parse_dash(stream_cp_url, mpd, ad_spec, ad_segment=5.0):
                         "height": int(Representation1.attrib["height"]),
                     },
                     "seg_time": S[0]/timescale+_ad_time(ad_spec,i),
+                    "seg_analytic_time": S[0]/timescale+_ad_time(ad_spec,i)+(S[1]/timescale)*ahead_analytic,
+                    "seg_transcode_time": S[0]/timescale+_ad_time(ad_spec,i),
                     "seg_duration": S[1]/timescale,
                     "codec": Representation1.attrib["codecs"],
                     "streaming_type": "dash",
                     "initSeg": stream_cp_url+"/"+init_stream,
-                    "analytics": stream_cp_url+"/"+stream,
+                    "analytics": stream_cp_url+"/"+stream_to_analytic,
                     "ad_duration": ad_spec["duration"][i%len(ad_spec["duration"])],
                     "ad_segment": ad_segment,
                 }
-                sidx=sidx+1
-                if sidx>=3: minfo["segs"][stream]["transcode"]=ad_spec["path"]+"/"+ad_spec["prefix"]+"/"+str(i)+"/"+Representation1.attrib["height"]+"p.mpd"
+                if sidx==ad_spec["interval"][i%len(ad_spec["interval"])]-3 :
+                    minfo["segs"][stream]["transcode"]=ad_spec["path"]+"/"+ad_spec["prefix"]+"/"+str(i)+"/"+Representation1.attrib["height"]+"p.mpd"
+                    minfo["segs"][stream]["seg_transcode_time"]=minfo["segs"][stream]["seg_transcode_time"]+(S[1]/timescale)*(ad_spec["interval"][i%len(ad_spec["interval"])] - sidx)
 
+                if sidx+ahead_analytic >= ad_spec["interval"][i%len(ad_spec["interval"])]:
+                    minfo["segs"][stream]["seg_analytic_time"] = minfo["segs"][stream]["seg_analytic_time"] + ad_spec["duration"][i%len(ad_spec["duration"])]
+                print( minfo["segs"][stream])
+                sidx=sidx+1
             SegmentTemplate1.attrib["startNumber"]=str(_start_number(ad_spec, int(SegmentTemplate1.attrib["startNumber"]), i))
             duration=float(duration)/timescale
             if duration<duration_min or duration_min==0: duration_min=duration
