@@ -51,47 +51,59 @@ def parse_hls(stream_cp_url, m3u8, stream_info, ad_spec, ad_segment=5.0):
             if lines[i+1].endswith(".m3u8"):
                 minfo["streams"][lines[i+1]]=stream_info
 
-        ahead_analytic = 4
-        if lines[i].startswith("#EXTINF:") and i+1<len(lines) and i+2*ahead_analytic+1<len(lines):
+        ahead_analytic = 2 
+        ad_interval=ad_spec["interval"][ad_sequence%len(ad_spec["interval"])]
+        if lines[i].startswith("#EXTINF:") and i+1<len(lines) and i+2*(ad_interval+1)+1<len(lines):
             m1=re.search("EXTINF:([0-9.]+)", lines[i])
             duration=float(m1.group(1))
             ori_analysis_res=lines[i+2*ahead_analytic+1].split("p")[0]
+            dst_analysis_res="480"
             seg_info={
                 "stream": stream_cp_url.split("/")[-1],
                 "seg_time": timeline+_ad_time(ad_spec,ad_sequence),
-                "seg_analytic_time": timeline+_ad_time(ad_spec,ad_sequence) + duration*ahead_analytic,
-                "seg_transcode_time": timeline+_ad_time(ad_spec,ad_sequence),
                 "seg_duration": duration,
                 "codec": "avc",
                 "streaming_type": "hls",
-                "analytics": stream_cp_url+"/"+lines[i+2*ahead_analytic+1].replace(ori_analysis_res,"480"),
+                "analytics":[],
                 "ad_duration": ad_spec["duration"][ad_sequence%len(ad_spec["duration"])],
                 "ad_segment": ad_segment,
             }
-            #print(ori_analysis_res+":"+seg_info["analytics"],flush=True)
-
-            # work around the first segment
-            if ad_sequence == 0 and segsplayed == 0:
-                seg_info["analytics"]=stream_cp_url+"/"+lines[i+1].replace(ori_analysis_res,"480")
-            # schedule transcoding every seg
-            if segsplayed + ahead_analytic >= ad_spec["interval"][ad_sequence%len(ad_spec["interval"])]:
-                seg_info["seg_analytic_time"]=seg_info["seg_analytic_time"]+ad_spec["duration"][ad_sequence%len(ad_spec["duration"])]
 
             # schedule every AD_INTERVAL interval
             m1=re.search("(.*)_[0-9]+", lines[i+1])
             ad_name=ad_spec["prefix"]+"/"+str(ad_sequence)+"/"+m1.group(1)
-            if segsplayed == ad_spec["interval"][ad_sequence%len(ad_spec["interval"])]:
+            if segsplayed == ad_interval:
                 ad_lines=_ad_template(ad_spec,ad_name+"_{0:03d}.ts",ad_sequence,ad_segment)
                 minfo["manifest"].extend(ad_lines)
                 ad_sequence=ad_sequence+1
                 segsplayed=0
 
-            # schedule transcoding every seg
-            if segsplayed == ad_spec["interval"][ad_sequence%len(ad_spec["interval"])] - 2:
-                for k in stream_info: seg_info[k]=stream_info[k]
-                seg_info["transcode"]=ad_spec["path"]+"/"+ad_name+".m3u8"
-                seg_info["seg_transcode_time"]=seg_info["seg_transcode_time"]+duration*(ad_spec["interval"][ad_sequence%len(ad_spec["interval"])] - segsplayed)
+            analytic_info={
+                "stream":stream_cp_url+"/"+lines[i+1].replace(ori_analysis_res, dst_analysis_res),
+                "seg_time":timeline+_ad_time(ad_spec,ad_sequence)
+            }
+            if segsplayed == 0 and ad_sequence == 0:
+                #if ad_sequence == 0:ahead_analytic=ad_interval-1
+                for _idx in range(ahead_analytic,ad_interval):
+                    temp = analytic_info.copy()
+                    temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
+                    temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence)+duration*_idx
+                    seg_info["analytics"] +=[temp]
+            elif segsplayed == ad_interval-1:
+                for _idx in range(ahead_analytic+1,ad_interval+1):
+                    temp = analytic_info.copy()
+                    temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
+                    temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+1)+duration*_idx
+                    seg_info["analytics"] +=[temp]
 
+            # schedule transcoding every seg
+            if segsplayed == ad_interval - 2:
+                for k in stream_info: seg_info[k]=stream_info[k]
+                transcode_info={
+                    "stream":ad_spec["path"]+"/"+ad_name+".m3u8",
+                    "seg_time":timeline+_ad_time(ad_spec,ad_sequence)+duration*(ad_interval - segsplayed)
+                }
+                seg_info["transcode"]=transcode_info
             # schedule analytics on every segment
             minfo["segs"][lines[i+1]]=seg_info
             timeline=timeline+duration
