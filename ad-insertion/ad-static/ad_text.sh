@@ -10,7 +10,7 @@ case "$(cat /proc/1/sched | head -n 1)" in
         clip_name="${clip/*\//}"
         echo $clip_name
         if test ! -f "/archive/$clip_name"; then
-            ffmpeg -i "/bak/$clip_name" -vf "scale=1920:1080,drawtext=text='Server-Side AD Insertion':x=(w-text_w)/2:y=(h-text_h)/2:fontsize=70:fontcolor=yellow@0.2" -y "/archive/$clip_name"
+            ffmpeg -i "/bak/$clip_name" -vf "scale=1920:960,pad=1920:1080:0:60,drawtext=text='Server-Side AD Insertion':x=(w-text_w)/2:y=30:fontsize=30:fontcolor=white" -y "/archive/$clip_name"
         fi
     done
     wait
