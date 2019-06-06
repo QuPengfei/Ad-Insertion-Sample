@@ -1,5 +1,6 @@
 $(document).foundation();
-$(window).bind("load", function () {
+$(window).on("load", function () {
+    $(window).resize();
     $(".top-bar").trigger(":initpage");
     $("#player").trigger(":update");
 
@@ -7,4 +8,5 @@ $(window).bind("load", function () {
     $("[adstats-console]").trigger(":initpage");
     $("[workloads-console]").trigger(":initpage");
     $("[analytics-console]").trigger(":initpage");
+    $(window).trigger('resize');
 });

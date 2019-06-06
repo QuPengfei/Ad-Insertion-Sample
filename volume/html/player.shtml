@@ -1,30 +1,18 @@
-<div id="player">
+<div id="player" style="height:calc(100vh - 85px)">
 
-  <table class="unstriped" style="table-layout:fixed;position:relative" ><tbody>
-    <tr>
-        <td style="width:80%;height:100%;vertical-align:top" video-section>
-            <div class="input-group">
-                <span class="input-group-label" style="width:15%"><b>Video URL:</b></span>
+  <table class="unstriped" style="table-layout:fixed;margin:0" ><tbody>
+    <tr style="border:0">
+        <td style="position:relative;vertical-align:top;padding:0" video-section>
+            <div class="input-group" style="display:none">
+                <span class="input-group-label"><b>Video URL:</b></span>
                 <input class="input-group-field" type="text" name="url" disabled>
             </div>
-            <div>
-                <video controls="true" autoplay muted style="width:100%;height:100%"></video>
-
-                <div analytics-console style="display:block;display:none;position:absolute;opacity:0.9;width:240px;height:100%;top:60px;left:0px;background-color:white;overflow:auto;pointer-events:none">
-                </div>
-
-                <div analytics-template class="media-object" style="display:none">
-                    <div class="media-object-section">
-                        <div class="thumbnail"><img baseimage><img overlayimage></div>
-                    </div>
-                    <div class="media-object-section"><p>Name: <span labelstring></span><br>Time: <span timestring></span></p></div>
-                </div>
-            </div>
+            <video controls="true" autoplay muted></video>
+            <svg analytics-console style="position:absolute;top:0;left:0;pointer-events:none" xmlns="http://www.w3.org/2000/svg" />
         <td>
-        <td style="width:20%;height:100%;vertical-align:top" playlist-section>
-            <table class="unstripped" style="table-layout:fixed">
-                <thead style="display:block"><td style="background-color:darkgray">Playlist:</td></thead>
-                <tbody play-list style="display:block;height:calc(100vh - 140px);overflow:auto"></tbody>
+        <td style="width:20%;height:100%;vertical-align:top;padding:0" rowspan=2 playlist-section>
+            <table class="unstripped" style="table-layout:fixed;margin:0">
+                <tbody play-list style="display:block;board:0;height:100%;overflow:auto"></tbody>
             </table>
         </td>
     </tr>

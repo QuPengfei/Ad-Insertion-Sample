@@ -110,3 +110,11 @@ $("#player video").click(function (e) {
         if (url) window.open(url,'_blank');
     });
 });
+
+$(window).resize(function () {
+    var page=$("#player");
+    page.find("[play-list]").css({height:(page.height()-2)+"px"});
+    var vw1=page.width()*4/5;
+    var vh1=page.height();
+    page.find("video,svg").css({width:(vw1-2)+"px","max-width":(vw1-2)+"px",height:(vh1-2)+"px","max-height":(vh1-2)+"px"}).parent().css({width:(vw1-2)+"px",height:(vh1-2)+"px"});
+});

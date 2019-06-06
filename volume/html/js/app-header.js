@@ -5,7 +5,8 @@ $(".top-bar").on(":initpage", function(e) {
 
     /* disable all switches */
     $("#playListSwitch").prop("checked",true);
-    $.each(["debug","analytics","adstats","workloads"],function(i,x) {
+    $("#analyticsConsoleSwitch").prop("checked",true);
+    $.each(["debug","adstats","workloads"],function(i,x) {
         $("#"+x+"ConsoleSwitch").prop("checked",false);
     });
 });

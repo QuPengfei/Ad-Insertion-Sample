@@ -21,6 +21,7 @@ var apiHost={
     },
     analytics: function (stream, start, end) {
         var url="api/debug/analytics";
+        console.log("api/debug/analytics?start="+start+"&end="+end);
         var args= { stream: stream, start: start, end:end }
         //console.log("GET "+url+"?"+JSON.stringify(args));
         return $.get(url, args);

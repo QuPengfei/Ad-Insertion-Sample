@@ -69,42 +69,87 @@ $("[debug-console]").on(":initpage",function () {
 
 $("[analytics-console]").on(":initpage", function () {
     var page=$(this);
+    var video=$("#player video");
+    var fps=30;
+    
+    var svg=$("#player svg");
+    var drawFrame=function () {
+        var frame=Math.floor((new Date()-page.data('time_offset'))/fps);
+        if (frame!=page.data('last_draw')) {
+            page.data('last_draw',frame);
 
-    $("#player video").unbind('timeupdate').on('timeupdate',function () {
-        var stream=$("#player input").val();
-        if ((stream.indexOf("dash/")>=0 && stream.indexOf(".mpd")>=0) || (stream.indexOf("hls/")>=0 && stream.indexOf(".m3u8")>=0)) {
-            var current_time=$("#player video")[0].currentTime;
-            apiHost.analytics(stream,current_time-0.150,current_time+0.150).then(function (data) {
-                var objects={}
-                $.each(data, function (x,v1) {
-                    var time=Math.floor(v1.time);
-                    if (!(time in objects)) objects[time]={}
-                    $.each(v1.objects, function (x, v2) {
-                        if ("detection" in v2) objects[time].d=v2.detection;
-                        if ("emotion" in v2) objects[time].e=v2.emotion;
-                        if ("face_id" in v2) objects[time].f=v2.face_id;
+            svg.empty();
+            var objects=page.data('objects');
+            if (frame in objects) {
+                $.each(objects[frame], function (x,v2) {
+                    var sx=svg.width()/v2.resolution.width;
+                    var sy=svg.height()/v2.resolution.height;
+                    var sxy=Math.min(sx,sy);
+                    var sw=sxy*v2.resolution.width;
+                    var sh=sxy*v2.resolution.height;
+                    var sxoff=(svg.width()-sw)/2;
+                    var syoff=(svg.height()-sh)/2;
+                    $.each(v2.objects, function (x,v1) {
+                        if ("detection" in v1) {
+                            var xmin=v1.detection.bounding_box.x_min*sw;
+                            var xmax=v1.detection.bounding_box.x_max*sw;
+                            var ymin=v1.detection.bounding_box.y_min*sh;
+                            var ymax=v1.detection.bounding_box.y_max*sh;
+                            if (xmin!=xmax && ymin!=ymax) {
+                                svg.append($(document.createElementNS(svg.attr('xmlns'),"rect")).attr({
+                                    x:sxoff+xmin,
+                                    y:syoff+ymin,
+                                    width:xmax-xmin,
+                                    height:ymax-ymin,
+                                    stroke:"cyan",
+                                    "stroke-width":5,
+                                    fill:"none",
+                                }));
+                                svg.append($(document.createElementNS(svg.attr('xmlns'),"text")).attr({
+                                    x:sxoff+xmin,
+                                    y:syoff+ymin,
+                                    fill: 'cyan',
+                                }).text(v1.detection.label+":"+Math.floor(v1.detection.confidence*100)+"%"));
+                            }
+                        }
+                        if ("emotion" in v1) {
+                        }
+                        if ("face_id" in v1) {
+                        }
                     });
                 });
-                page.children().remove();
-                $.each(objects, function (time,v2) {
-                    var div1=page.parent().find("[analytics-template]").clone(false).removeAttr("analytics-template");
-                    var ts1=parseInt(time,10);
-                    div1.find("[timestring]").text([Math.floor(ts1/3600)%24,Math.floor(ts1/60)%60,ts1%60].map(v=>v<10?'0'+v:v).join(':'));
-                    if ("d" in v2) {
-                        div1.find("[labelstring]").text(v2.d.label);
-                        div1.find("[baseimage]").attr("src","image/object_"+v2.d.label_id+"_"+v2.d.label+".png").width(40).height(40);
-                    }
-                    if ("e" in v2) {
-                        div1.find("[overlayimage]").attr("src","image/"+v2.e.label+".png").width(24).height(24);
-                    }
-                    if ("f" in v2) {
-                        if (v2.f.label!="Unknown")
-                            div1.find("[labelstring]").text(v2.f.label);
-                    }
-                    page.append(div1.show());
-                });
-            });
+            }
         }
+        if (video[0].paused) return page.data('time_offset',0);
+        requestAnimationFrame(drawFrame);
+    };
+
+    video.unbind('loadedmetadata').bind('loadedmetadata',function () {
+        page.data('objects',{});
+        page.data('time_offset',0);
+        var start_time=0;
+        var read=function (stream) {
+            if (!page.is(":visible")) return;
+            if ($("#player input").val()!=stream) return;
+            apiHost.analytics(stream,start_time,start_time+2).then(function (data) {
+                var objects=page.data('objects');
+                $.each(data, function (x,v1) {
+                    var frame=Math.floor(v1.time*1000/fps);
+                    if (!(frame in objects)) objects[frame]=[];
+                    objects[frame].push(v1);
+                });
+                start_time=start_time+2;
+                if (start_time<=video[0].duration) {
+                    var delta=(start_time-video[0].currentTime-2)*1000;
+                    setTimeout(read,delta<0?0:delta,stream);
+                }
+            });
+        };
+        read($("#player input").val());
+    }).unbind('timeupdate').on('timeupdate',function () {
+        var tmp=page.data('time_offset');
+        page.data('time_offset',new Date()-video[0].currentTime*1000);
+        if (!tmp) drawFrame();
     });
 }).on(":mouseclick",function (e) {
     $(this).next().trigger(e);
