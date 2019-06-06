@@ -70,11 +70,11 @@ $("[debug-console]").on(":initpage",function () {
 $("[analytics-console]").on(":initpage", function () {
     var page=$(this);
     var video=$("#player video");
-    var fps=30;
+    var duration=33;
     
     var svg=$("#player svg");
     var drawFrame=function () {
-        var frame=Math.floor((new Date()-page.data('time_offset'))/fps);
+        var frame=Math.floor((new Date()-page.data('time_offset'))/duration);
         if (frame!=page.data('last_draw')) {
             page.data('last_draw',frame);
 
@@ -125,26 +125,26 @@ $("[analytics-console]").on(":initpage", function () {
     };
 
     video.unbind('loadedmetadata').bind('loadedmetadata',function () {
-        page.data('objects',{});
-        page.data('time_offset',0);
         var start_time=0;
         var read=function (stream) {
-            if (!page.is(":visible")) return;
-            if ($("#player input").val()!=stream) return;
-            apiHost.analytics(stream,start_time,start_time+2).then(function (data) {
+            var segtime=5;
+            apiHost.analytics(stream,start_time,start_time+segtime).then(function (data) {
                 var objects=page.data('objects');
                 $.each(data, function (x,v1) {
-                    var frame=Math.floor(v1.time*1000/fps);
+                    var frame=Math.floor(v1.time*1000/duration);
                     if (!(frame in objects)) objects[frame]=[];
                     objects[frame].push(v1);
                 });
-                start_time=start_time+2;
-                if (start_time<=video[0].duration) {
-                    var delta=(start_time-video[0].currentTime-2)*1000;
-                    setTimeout(read,delta<0?0:delta,stream);
-                }
             });
+            start_time=start_time+segtime;
+            if (start_time<=video[0].duration) {
+                var delta=(start_time-video[0].currentTime-segtime)*1000;
+                if (delta<=0) return read(stream);
+                return setTimeout(read,delta,stream);
+            }
         };
+        page.data('objects',{});
+        page.data('time_offset',0);
         read($("#player input").val());
     }).unbind('timeupdate').on('timeupdate',function () {
         var tmp=page.data('time_offset');
