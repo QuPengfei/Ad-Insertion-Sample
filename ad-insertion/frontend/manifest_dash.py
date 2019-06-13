@@ -127,7 +127,7 @@ def parse_dash(stream_cp_url, mpd, ad_spec, ad_segment=5.0):
 
             sidx=0
             duration=0
-            ahead_analytic=4
+            ahead_analytic=3
             ad_interval=ad_spec["interval"][i%len(ad_spec["interval"])]
             for S in periods[i][AdaptationSet]:
                 #print(S,flush=True)
@@ -170,20 +170,33 @@ def parse_dash(stream_cp_url, mpd, ad_spec, ad_segment=5.0):
                         temp["stream"]=stream_cp_url+"/"+stream_to_analytic
                         temp["seg_time"]=S[0]/timescale+_ad_time(ad_spec,i)+(S[1]/timescale)*_idx
                         minfo["segs"][stream]["analytics"] +=[temp]
-                elif sidx == ad_interval-1:
-                    for _idx in range(ahead_analytic+1,ad_interval+1):
+                    for _idx in range(ad_interval+ahead_analytic,2*ad_interval):
+                        temp = analytic_info.copy()
+                        stream_to_analytic=_to_stream(SegmentTemplate1.attrib["media"],Representation1.attrib["id"],int(SegmentTemplate1.attrib["startNumber"])+S[2]+_idx)
+                        temp["stream"]=stream_cp_url+"/"+stream_to_analytic
+                        temp["seg_time"]=S[0]/timescale+_ad_time(ad_spec,i+1)+(S[1]/timescale)*_idx
+                        minfo["segs"][stream]["analytics"] +=[temp]
+                elif sidx == 0:
+                    for _idx in range(ad_interval+ahead_analytic,2*ad_interval):
                         temp = analytic_info.copy()
                         stream_to_analytic=_to_stream(SegmentTemplate1.attrib["media"],Representation1.attrib["id"],int(SegmentTemplate1.attrib["startNumber"])+S[2]+_idx)
                         temp["stream"]=stream_cp_url+"/"+stream_to_analytic
                         temp["seg_time"]=S[0]/timescale+_ad_time(ad_spec,i+1)+(S[1]/timescale)*_idx
                         minfo["segs"][stream]["analytics"] +=[temp]
                 
-                if sidx==ad_interval-2 :
+                if i==0 and sidx==ad_interval-3 :
                     transcode_info={
                         "stream":ad_spec["path"]+"/"+ad_spec["prefix"]+"/"+str(i)+"/"+Representation1.attrib["height"]+"p.mpd",
                         "seg_time":S[0]/timescale+_ad_time(ad_spec,i) + (S[1]/timescale)*(ad_interval -sidx)
                     }
                     minfo["segs"][stream]["transcode"]=transcode_info
+                elif i!=0 and sidx==1:
+                    transcode_info={
+                        "stream":ad_spec["path"]+"/"+ad_spec["prefix"]+"/"+str(i)+"/"+Representation1.attrib["height"]+"p.mpd",
+                        "seg_time":S[0]/timescale+_ad_time(ad_spec,i) + (S[1]/timescale)*(ad_interval -sidx)
+                    }
+                    minfo["segs"][stream]["transcode"]=transcode_info
+
 
                 #print( minfo["segs"][stream])
                 sidx=sidx+1
