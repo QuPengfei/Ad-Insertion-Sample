@@ -17,6 +17,7 @@ class ZKData(object):
         try:
             self._zk.create(path, value, makepath=True)
         except NodeExistsError:
+            print("error")
             pass
 
     def get(self, path):

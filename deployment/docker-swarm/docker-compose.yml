@@ -102,7 +102,7 @@ services:
             - kafka
             - zookeeper
         environment:
-            AD_INTERVALS: 8
+            AD_INTERVALS: 12 
             AD_DURATION: 10 
         deploy:
             replicas: 1
@@ -178,7 +178,7 @@ services:
             - ad-insertion-frontend
             - ad-content
         deploy:
-            replicas: 1
+            replicas: 1 
     
     #video-analytic-ffmpeg:
     #    image: video_analytics_service_ffmpeg:latest
@@ -197,7 +197,7 @@ services:
             - kafka
             - zookeeper
         deploy:
-            replicas: 4
+            replicas: 9 
         restart: unless-stopped
 
 secrets:
