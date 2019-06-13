@@ -44,4 +44,4 @@ if __name__ == "__main__":
 
         except Exception as e:
             print(str(e))
-        time.sleep(10)
+        time.sleep(2)
