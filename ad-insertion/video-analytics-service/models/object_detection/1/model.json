@@ -2,8 +2,8 @@
     "name": "object_detection",
     "version": 1,
     "type": "IntelDLDT",
-    "network":"./FP32/mobilenet-ssd.xml",
-    "weights":"./FP32/mobilenet-ssd.bin",
+    "network":"./INT8/ssd_mobilenet_i8.xml",
+    "weights":"./INT8/ssd_mobilenet_i8.bin",
     "proc":"./mobilenet-ssd.json",
     "outputs": {
 	"detection":
