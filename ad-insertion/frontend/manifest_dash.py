@@ -127,8 +127,8 @@ def parse_dash(stream_cp_url, mpd, ad_spec, ad_segment=5.0):
 
             sidx=0
             duration=0
-            ahead_analytic=3
             ad_interval=ad_spec["interval"][i%len(ad_spec["interval"])]
+            ahead_analytic=ad_interval - 5
             for S in periods[i][AdaptationSet]:
                 #print(S,flush=True)
                 S1=ET.SubElement(SegmentTimeline1,_ns("S"),{"t":str(S[0]),"d":str(S[1])})
@@ -184,7 +184,7 @@ def parse_dash(stream_cp_url, mpd, ad_spec, ad_segment=5.0):
                         temp["seg_time"]=S[0]/timescale+_ad_time(ad_spec,i+1)+(S[1]/timescale)*_idx
                         minfo["segs"][stream]["analytics"] +=[temp]
                 
-                if i==0 and sidx==ad_interval-3 :
+                if i==0 and sidx==ad_interval-4 :
                     transcode_info={
                         "stream":ad_spec["path"]+"/"+ad_spec["prefix"]+"/"+str(i)+"/"+Representation1.attrib["height"]+"p.mpd",
                         "seg_time":S[0]/timescale+_ad_time(ad_spec,i) + (S[1]/timescale)*(ad_interval -sidx)

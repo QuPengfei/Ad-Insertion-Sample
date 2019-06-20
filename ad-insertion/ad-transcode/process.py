@@ -207,7 +207,7 @@ def SignalIncompletion(name):
 
 def ADTranscode(kafkamsg,db):
     zk = None
-    height=480
+    height=720
 
     msg=KafkaMsgParser(kafkamsg)
     # add zk state for each resolution file if we generate the ad clip each time for one solution

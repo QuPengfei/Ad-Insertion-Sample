@@ -53,10 +53,10 @@ def parse_hls(stream_cp_url, m3u8, stream_info, ad_spec, ad_segment=5.0):
 
         ad_interval=ad_spec["interval"][ad_sequence%len(ad_spec["interval"])]
         ahead_analytic = ad_interval - 5 
-        if lines[i].startswith("#EXTINF:") and i+1<len(lines) and i+2*ad_interval+1<len(lines):
+        if lines[i].startswith("#EXTINF:") and i+1<len(lines):
             m1=re.search("EXTINF:([0-9.]+)", lines[i])
             duration=float(m1.group(1))
-            ori_analysis_res=lines[i+2*ahead_analytic+1].split("p")[0]
+            ori_analysis_res=lines[i+1].split("p")[0]
             dst_analysis_res="480"
             seg_info={
                 "stream": stream_cp_url.split("/")[-1],
@@ -83,25 +83,24 @@ def parse_hls(stream_cp_url, m3u8, stream_info, ad_spec, ad_segment=5.0):
                 "seg_time":timeline+_ad_time(ad_spec,ad_sequence)
             }
             if segsplayed == 0 and ad_sequence == 0:
-                #if ad_sequence == 0:ahead_analytic=ad_interval-1
                 for _idx in range(ahead_analytic,ad_interval):
                     temp = analytic_info.copy()
                     temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
                     temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence)+duration*_idx
                     seg_info["analytics"] +=[temp]
-                #for _idx in range(ad_interval+ahead_analytic,2*ad_interval):
-                #    temp = analytic_info.copy()
-                #    temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
-                #    temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+1)+duration*_idx
-                #    seg_info["analytics"] +=[temp]
+                for _idx in range(ad_interval+ahead_analytic,2*ad_interval):
+                    if i+2*_idx+1<len(lines):
+                        temp = analytic_info.copy()
+                        temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
+                        temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+1)+duration*_idx
+                        seg_info["analytics"] +=[temp]
             elif segsplayed == 0:
-                #for _idx in range(ad_interval+ahead_analytic,2*ad_interval):
-                for _idx in range(ahead_analytic,ad_interval):
-                    temp = analytic_info.copy()
-                    temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
-                    temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence)+duration*_idx
-                    #temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+1)+duration*_idx
-                    seg_info["analytics"] +=[temp]
+                for _idx in range(ad_interval+ahead_analytic,2*ad_interval):
+                    if i+2*_idx+1<len(lines):
+                        temp = analytic_info.copy()
+                        temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
+                        temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+1)+duration*_idx
+                        seg_info["analytics"] +=[temp]
 
             # schedule transcoding every seg
             if ad_sequence == 0 and segsplayed == ad_interval - 4:

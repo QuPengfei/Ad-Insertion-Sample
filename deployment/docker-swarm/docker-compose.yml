@@ -178,27 +178,27 @@ services:
             - ad-insertion-frontend
             - ad-content
         deploy:
-            replicas: 1 
+            replicas: 4 
     
-    #video-analytic-ffmpeg:
-    #    image: video_analytics_service_ffmpeg:latest
-    #    depends_on:
-    #        - content-provider
-    #        - kafka
-    #        - zookeeper
-    #    deploy:
-    #        replicas: 1
-    #    restart: unless-stopped
-
-    video-analytic-gstreamer:
-        image: video_analytics_service_gstreamer:latest
+    video-analytic-ffmpeg:
+        image: video_analytics_service_ffmpeg:latest
         depends_on:
             - content-provider
             - kafka
             - zookeeper
         deploy:
-            replicas: 9 
+            replicas: 9
         restart: unless-stopped
+
+    #video-analytic-gstreamer:
+    #    image: video_analytics_service_gstreamer:latest
+    #    depends_on:
+    #        - content-provider
+    #        - kafka
+    #        - zookeeper
+    #    deploy:
+    #        replicas: 9 
+    #    restart: unless-stopped
 
 secrets:
     self_key:

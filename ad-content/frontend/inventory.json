@@ -1,7 +1,7 @@
 [
     {"uri" : "http://ad-content:8080/BTPVP031919A_Intel_AdoptADog_FINAL_032819.mp4",
      "navigation_url" : "http://www.intel.com",
-     "keywords" : ["dog", "cow", "bird", "horse", "sheep", "family"],
+     "keywords" : ["dog", "cow", "horse", "sheep", "family"],
      "duration" : "10"
     },
     {"uri" : "http://ad-content:8080/BTPVP031919B_Intel_Boat_FINAL_032819.mp4",
