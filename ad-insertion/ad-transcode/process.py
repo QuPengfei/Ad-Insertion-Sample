@@ -73,11 +73,13 @@ def ADPrefetch(ad_uri):
 
 def ADClipDecision(msg, db):
     duration = msg.time_range[1]-msg.time_range[0]
-    for t in range(5):
+    query_times = 20 
+    for t in range(query_times):
         print("query db with time range: "+str(msg.time_range[0])+"-"+str(msg.time_range[1]))
         metaData = db.query(msg.content, msg.time_range, msg.time_field)
         if metaData:
             try:
+                #print(metaData,flush=True)
                 jdata = json.dumps({
                     "metadata":metaData,
                     "user":{
@@ -93,7 +95,9 @@ def ADClipDecision(msg, db):
             except requests.exceptions.RequestException as e:
                 print("Error in ADClipDecision() " + str(e), flush=True)
             return None
-        msg.time_range[0]=msg.time_range[0]-duration
+        time.sleep(1)
+        if t == query_times - 2:
+            msg.time_range[0]=msg.time_range[0]-duration/2
     return None
 
 class KafkaMsgParser(object):
@@ -118,6 +122,24 @@ class KafkaMsgParser(object):
  
     def GetRedition(self):
         redition = ([self.width, self.height, self.bitrate, 128000],)
+        return redition
+
+    def GetFixRedition(self,height):
+        #redition = ([self.width, self.height, self.bitrate, 128000],)
+        renditions_local=(
+        # resolution  bitrate(kbps)  audio-rate(kbps)
+            [3840, 2160, 14000000, 192000],
+            [2560, 1440, 10000000, 192000],
+            [1920, 1080, 5000000, 192000],
+            [1280, 720, 2800000, 192000],
+            [842, 480, 1400000, 128000],
+            [640, 360, 800000, 128000]
+        )
+        for item in renditions_local:
+            if item[1] == height:
+                redition = (item,)
+                return redition
+        redition = ([842, 480, 1400000, 128000],)
         return redition
 
 # this will
@@ -185,6 +207,7 @@ def SignalIncompletion(name):
 
 def ADTranscode(kafkamsg,db):
     zk = None
+    height=720
 
     msg=KafkaMsgParser(kafkamsg)
     # add zk state for each resolution file if we generate the ad clip each time for one solution
@@ -221,11 +244,13 @@ def ADTranscode(kafkamsg,db):
 
         try:
             # only generate one resolution for ad segment, if not generated, ad will fall back to skipped ad.
-            cmd = GetABRCommand(stream, msg.target_path, msg.streaming_type, msg.GetRedition(), duration=msg.segment_duration, fade_type="audio", content_type="ad")
+            #cmd = GetABRCommand(stream, msg.target_path, msg.streaming_type, msg.GetRedition(), duration=msg.segment_duration, fade_type="audio", content_type="ad")
+            cmd = GetABRCommand(stream, msg.target_path, msg.streaming_type, msg.GetFixRedition(height), duration=msg.segment_duration, fade_type="audio", content_type="ad")
             process_id = subprocess.Popen(cmd,stdout=subprocess.PIPE)
             # the `multiprocessing.Process` process will wait until
             # the call to the `subprocess.Popen` object is completed
             process_id.wait()
+            CopyAD(msg,height)
             SignalCompletion(msg.target)
             zk.process_end()
         except Exception as e:
