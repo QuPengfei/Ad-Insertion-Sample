@@ -101,7 +101,9 @@ $("[analytics-console]").on(":initpage", function () {
                         if (v2.f.label!="Unknown")
                             div1.find("[labelstring]").text(v2.f.label);
                     }
-                    page.append(div1.show());
+		    var hidden_object_list={"sheep":0,"bird":1,"horse":2,"tvmonitor":3}
+                    if (!(v2.d.label in hidden_object_list))
+                        page.append(div1.show());
                 });
             });
         }
