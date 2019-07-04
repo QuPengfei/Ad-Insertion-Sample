@@ -38,8 +38,8 @@ class Schedule(object):
             "meta-db": {
                 "stream": seg_info["stream"],
                 "time_range": [
-                    seg_info["transcode"]["seg_time"]-search_interval,
-                    seg_info["transcode"]["seg_time"],
+                    seg_info["transcode"][0]["seg_time"]-search_interval,
+                    seg_info["transcode"][0]["seg_time"],
                 ],
                 "time_field": "time",
             },
@@ -52,14 +52,21 @@ class Schedule(object):
                 "segment": seg_info["ad_segment"],
             },
             "destination": {
-                "adpath": seg_info["transcode"]["stream"],
+                "adpath": seg_info["transcode"][0]["stream"],
             },
             "user_info": {
                 "name": user,
                 "keywords": [] #"keywords": ["sports","animal"]
-            }
+            },
+            "bench_mode":0
         }
-        self._producer.send(transcode_topic, json.dumps(request))
+        for item in seg_info["transcode"]:
+            temp=request.copy()
+            temp["meta-db"]["time_range"]=[item["seg_time"]-search_interval,item["seg_time"]]
+            temp["destination"]=item["stream"]
+            temp["bench_mode"]=item["bench_mode"]
+            print("Schedule transcode: "+temp["destination"], flush=True)
+            self._producer.send(transcode_topic, json.dumps(temp))
 
     def flush(self):
         self._producer.flush()

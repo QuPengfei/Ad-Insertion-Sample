@@ -77,7 +77,7 @@ def ADClipDecision(msg, db):
     for t in range(query_times):
         print("query db with time range: "+str(msg.time_range[0])+"-"+str(msg.time_range[1]))
         metaData = db.query(msg.content, msg.time_range, msg.time_field)
-        if metaData:
+        if metaData or msg.bench_mode:
             try:
                 #print(metaData,flush=True)
                 jdata = json.dumps({
@@ -85,7 +85,8 @@ def ADClipDecision(msg, db):
                     "user":{
                         "name":msg.user_name,
                         "keywords":msg.user_keywords
-                    }
+                    },
+                    "bench_mode":msg.bench_mode
                 })
                 r = requests.post(ad_decision_server, data=jdata, timeout=timeout)
                 if r.status_code == 200:
@@ -119,6 +120,7 @@ class KafkaMsgParser(object):
         self.height = self.msg["ad_config"]["resolution"]["height"]
         self.width = self.msg["ad_config"]["resolution"]["width"]
         self.bitrate = self.msg["ad_config"]["bandwidth"]
+        self.bench_mode = self.msg["bench_mode"]
  
     def GetRedition(self):
         redition = ([self.width, self.height, self.bitrate, 128000],)

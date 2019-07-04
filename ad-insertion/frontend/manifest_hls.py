@@ -53,6 +53,8 @@ def parse_hls(stream_cp_url, m3u8, stream_info, ad_spec, ad_segment=5.0):
 
         ad_interval=ad_spec["interval"][ad_sequence%len(ad_spec["interval"])]
         ahead_analytic = ad_interval - 5 
+        if ahead_analytic<0: ahead_analytic=0 
+
         if lines[i].startswith("#EXTINF:") and i+1<len(lines):
             m1=re.search("EXTINF:([0-9.]+)", lines[i])
             duration=float(m1.group(1))
@@ -82,7 +84,17 @@ def parse_hls(stream_cp_url, m3u8, stream_info, ad_spec, ad_segment=5.0):
                 "stream":stream_cp_url+"/"+lines[i+1].replace(ori_analysis_res, dst_analysis_res),
                 "seg_time":timeline+_ad_time(ad_spec,ad_sequence)
             }
-            if segsplayed == 0 and ad_sequence == 0:
+            if bench_mode != 0:
+                line_range=(len(lines)+ad_interval-1)/ad_interval
+                if segsplayed == 0 and ad_sequence == 0:
+                    for _idy in range(line_range):
+                        for _idx in range(_idy*ad_interval+ahead_analytic,(_idy+1)*ad_interval):
+                            if i+2*_idx+1<len(lines):
+                                temp = analytic_info.copy()
+                                temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
+                                temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+_idy)+duration*_idx
+                                seg_info["analytics"] +=[temp]
+            elif segsplayed == 0 and ad_sequence == 0:
                 for _idx in range(ahead_analytic,ad_interval):
                     temp = analytic_info.copy()
                     temp["stream"]=stream_cp_url+"/"+lines[i+2*_idx+1].replace(ori_analysis_res, dst_analysis_res)
@@ -102,19 +114,36 @@ def parse_hls(stream_cp_url, m3u8, stream_info, ad_spec, ad_segment=5.0):
                         temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+1)+duration*_idx
                         seg_info["analytics"] +=[temp]
 
+            if bench_mode != 0:
+                transcode_info={
+                    "stream":ad_spec["path"]+"/"+ad_name+".m3u8",
+                    "seg_time":timeline+_ad_time(ad_spec,ad_sequence)+duration*(ad_interval - segsplayed),
+                    "bench_mode":bench_mode
+                }
+                line_range=(len(lines)+ad_interval-1)/ad_interval
+                if segsplayed == 0 and ad_sequence == 0:
+                    for k in stream_info: seg_info[k]=stream_info[k]
+                    for _idy in range(line_range):
+                        _ad_name=ad_spec["prefix"]+"/"+str(_idy)+"/"+m1.group(1)
+                        temp = transcode_info.copy()
+                        temp["stream"]=ad_spec["path"]+"/"+_ad_name+".m3u8"
+                        temp["seg_time"]=timeline+_ad_time(ad_spec,ad_sequence+_idy)+duration*(ad_interval - segsplayed)
+                        seg_info["transcode"]+=temp
             # schedule transcoding every seg
-            if ad_sequence == 0 and segsplayed == ad_interval - 4:
+            elif ad_sequence == 0 and segsplayed == ad_interval - 4:
                 for k in stream_info: seg_info[k]=stream_info[k]
                 transcode_info={
                     "stream":ad_spec["path"]+"/"+ad_name+".m3u8",
-                    "seg_time":timeline+_ad_time(ad_spec,ad_sequence)+duration*(ad_interval - segsplayed)
+                    "seg_time":timeline+_ad_time(ad_spec,ad_sequence)+duration*(ad_interval - segsplayed),
+                    "bench_mode":bench_mode
                 }
                 seg_info["transcode"]=transcode_info
             elif ad_sequence != 0 and segsplayed == 1:
                 for k in stream_info: seg_info[k]=stream_info[k]
                 transcode_info={
                     "stream":ad_spec["path"]+"/"+ad_name+".m3u8",
-                    "seg_time":timeline+_ad_time(ad_spec,ad_sequence)+duration*(ad_interval - segsplayed)
+                    "seg_time":timeline+_ad_time(ad_spec,ad_sequence)+duration*(ad_interval - segsplayed),
+                    "bench_mode":bench_mode
                 }
                 seg_info["transcode"]=transcode_info
  
