@@ -28,6 +28,8 @@ class ManifestHandler(web.RequestHandler):
         zk=ZKMData()
         enable=zk.get(zk_benchmode_path)
         zk.close()
+        if enable == {}:
+            return 0
         return enable
 
     @run_on_executor
