@@ -121,6 +121,11 @@
       </label>
     </div>
 
+    <div class="input-group" ui-header-setting-ad-interval-window>
+      <span class="input-group-label" style="width:40%"><b>AD Interval:</b></span>
+      <input class="input-group-field" type="number" name="window" ><br>
+    </div>
+
     <input class="button expanded" type="submit" data-close>
   </form>
 </div>

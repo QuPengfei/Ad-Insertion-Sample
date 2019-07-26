@@ -24,13 +24,22 @@ class ManifestHandler(web.RequestHandler):
         return True
 
     def _get_bench_mode(self, name):
-        zk_benchmode_path=zk_prefix+"/"+name +"/"+"benchmode"
+        zk_path=zk_prefix+"/"+name +"/"+"benchmode"
         zk=ZKMData()
-        enable=zk.get(zk_benchmode_path)
+        enable=zk.get(zk_path)
         zk.close()
         if enable == {}:
             return 0
         return enable
+
+    def _get_interval(self, name):
+        zk_path=zk_prefix+"/"+name +"/"+"adinterval"
+        zk=ZKMData()
+        value=zk.get(zk_path)
+        zk.close()
+        if value == {}:
+            return 12
+        return value
 
     @run_on_executor
     def _set_states(self, minfo, zk_path, stream_base, user):
@@ -85,7 +94,8 @@ class ManifestHandler(web.RequestHandler):
         }
 
         ad_bench_mode=self._get_bench_mode(user)
-        print("Bench Mode:"+str(ad_bench_mode),flush=True)
+        ad_interval=self._get_interval(user)
+        ad_spec["interval"]=[ad_interval]
         if stream.endswith(".m3u8"):
             zk=ZKData()
             minfo=parse_hls(
@@ -114,8 +124,11 @@ class ManifestHandler(web.RequestHandler):
 
     def post(self):
         name=str(self.get_argument("name"))
-        enable=int(self.get_argument("enable"))
+        benchmode=int(self.get_argument("benchmode"))
+        interval=int(self.get_argument("interval"))/2
         zk_benchmode_path=zk_prefix+"/"+name +"/"+"benchmode"
+        zk_interval_path=zk_prefix+"/"+name +"/"+"adinterval"
         zk=ZKMData()
-        zk.set(zk_benchmode_path, enable)
+        zk.set(zk_benchmode_path, benchmode)
+        zk.set(zk_interval_path, interval)
         zk.close()

@@ -1,6 +1,7 @@
 $(".top-bar").on(":initpage", function(e) {
     $("#setting").find("[ui-header-setting-user] input").val(settings.user());
     $("#setting").find("[ui-header-setting-analytics-window] input").val(settings.analytics_window());
+    $("#setting").find("[ui-header-setting-ad-interval-window] input").val(settings.ad_interval_window());
     $(this).find("[user-name-menu]").text(settings.user());
 
     /* disable all switches */
@@ -17,8 +18,10 @@ $("#setting").find("form").submit(function() {
     var user=page.find("[ui-header-setting-user] input").val().toLowerCase();
     settings.user(user);
     $(".top-bar").find("[user-name-menu]").text(user);
-    
+
     settings.analytics_window(page.find("[ui-header-setting-analytics-window] input").val());
+    var interval=page.find("[ui-header-setting-ad-interval-window] input").val()
+    settings.ad_interval_window(interval);
 
     $.each(["debug","analytics","adstats","workloads","analyticPerf"],function(i,x) {
         if ($("#"+x+"ConsoleSwitch").is(":checked"))
@@ -34,53 +37,44 @@ $("#setting").find("form").submit(function() {
         $("#player [playlist-section]").hide();
         $("#player [video-section]").width("100%");
     }
-
+ 
     /* ["obj_detection", "emotion", "face_recognition"] */
     if ($("#objDetectionSwitch").is(":checked")) {
        var casename="obj_detection"
-       var name=user
        var enable=1
-       apiHost.usecase(name,casename,enable)
+       apiHost.usecase(user,casename,enable)
     } else {
        var casename="obj_detection"
-       var name=user
        var enable=0
-       apiHost.usecase(name,casename,enable)
+       apiHost.usecase(user,casename,enable)
     }
 
     if ($("#emotionRecognitionSwitch").is(":checked")) {
        var casename="emotion"
-       var name=user
        var enable=1
-       apiHost.usecase(name,casename,enable)
+       apiHost.usecase(user,casename,enable)
     } else {
        var casename="emotion"
-       var name=user
        var enable=0
-       apiHost.usecase(name,casename,enable)
+       apiHost.usecase(user,casename,enable)
     }
 
     if ($("#faceRecognitionSwitch").is(":checked")) {
        var casename="face_recognition"
-       var name=user
        var enable=1
        apiHost.usecase(name,casename,enable)
+       apiHost.usecase(user,casename,enable)
     } else {
        var casename="face_recognition"
-       var name=user
        var enable=0
-       apiHost.usecase(name,casename,enable)
+       apiHost.usecase(user,casename,enable)
     }
 
+    var benchmode=0
     if ($("#benchModeSwitch").is(":checked")) {
-       var name=user
-       var enable=1
-       apiHost.benchmode(name,enable)
-    } else {
-       var name=user
-       var enable=0
-       apiHost.benchmode(name,enable)
+       benchmode=1
     }
+    apiHost.usecase(user,benchmode,interval)
 
     $("#player").trigger(":update");
     return false;
@@ -94,5 +88,9 @@ var settings={
     analytics_window: function (size) {
         if (typeof size != "undefined") localStorage.analytics_window=size;
         return typeof localStorage.analytics_window!="undefined"?parseFloat(localStorage.analytics_window):10;
+    },
+    ad_interval_window: function (size) {
+        if (typeof size != "undefined") localStorage.ad_interval_window=size;
+        return typeof localStorage.ad_interval_window!="undefined"?parseFloat(localStorage.ad_interval_window):24;
     },
 }

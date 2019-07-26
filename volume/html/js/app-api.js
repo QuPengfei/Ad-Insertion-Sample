@@ -31,9 +31,9 @@ var apiHost={
         console.log("POST "+url+"?"+JSON.stringify(args));
         return $.post(url, args);
     },
-    benchmode: function (name,enable) {
-        var url="api/benchmode";
-        var args= { name: name, enable: enable };
+    parameter: function (name,benchmode,interval) {
+        var url="api/parameter";
+        var args= { name: name, enable: enable,interval: interval };
         console.log("POST "+url+"?"+JSON.stringify(args));
         return $.post(url, args);
     },
