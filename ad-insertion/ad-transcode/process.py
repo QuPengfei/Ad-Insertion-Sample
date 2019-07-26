@@ -77,9 +77,8 @@ def ADClipDecision(msg, db):
     for t in range(query_times):
         print("query db with time range: "+str(msg.time_range[0])+"-"+str(msg.time_range[1]))
         metaData = db.query(msg.content, msg.time_range, msg.time_field)
-        if metaData:
+        if metaData or msg.bench_mode:
             try:
-                #print(metaData,flush=True)
                 jdata = json.dumps({
                     "metadata":metaData,
                     "user":{
