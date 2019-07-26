@@ -28,5 +28,15 @@
      "navigation_url" : "http://www.intel.com",
      "keywords" : ["bottle", "sofa", "chair", "family", "dinningtable"],
      "duration" : "10"
+    },
+    {"uri" : "http://ad-content:8080/HorseScene2_15.mp4",
+     "navigation_url" : "http://www.intel.com",
+     "keywords" : ["happy"],
+     "duration" : "10"
+    },
+    {"uri" : "http://ad-content:8080/SkateBoard_15.mp4",
+     "navigation_url" : "http://www.intel.com",
+     "keywords" : ["anger", "sad", "neutral"],
+     "duration" : "10"
     }
 ]
