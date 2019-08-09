@@ -13,6 +13,8 @@ SERVER_IP=172.32.1.254
 NODE_IP=172.32.1.1
 SERVER_NFS=/mnt/nfs
 LOCAL_NFS=/mnt/nfs
+SEVER_LABEL=ad-insert-manager
+NODE_LABEL=ad-insert-worker-hkh
 
 printf "##########################################################\n"
 printf "############ Setup NFS on the Server Side ################\n"
@@ -22,8 +24,8 @@ if [[ $DISTRO == "centos" ]]; then
     sudo -E yum install -y expect.x86_64
     sudo -E yum install -y rpcbind nfs-utils
 
-    mkdir -p ${SERVER_NFS} 
-    sudo -E echo "${SERVER_NFS} *(rw,no_root_squash,no_all_squash,sync,anonuid=501,anongid=501)" >> /etc/exports
+    sudo -E mkdir -p ${SERVER_NFS} 
+    echo "${SERVER_NFS} *(rw,no_root_squash,no_all_squash,sync,anonuid=501,anongid=501)" | sudo tee -a /etc/exports
 
     sudo -E systemctl enable rpcbind.service
     sudo -E systemctl enable nfs-server.service
@@ -35,9 +37,8 @@ if [[ $DISTRO == "centos" ]]; then
     sudo -E systemctl disable firewalld
     sudo -E systemctl stop  firewalld
 
-    rpcinfo -p
-    exportfs -r
-    exportfs
+    sudo -E exportfs -r
+    sudo -E exportfs
 elif [[ $DISTRO == "ubuntu" ]]; then
     sudo -E apt install -y nfs-kernel-server
     sudo -E apt install -y nfs-common
@@ -47,9 +48,9 @@ elif [[ $DISTRO == "ubuntu" ]]; then
     sudo -E systemctl disable firewalld
     sudo -E systemctl stop  firewalld
 
-    mkdir -p ${SERVER_NFS}
+    sudo -E mkdir -p ${SERVER_NFS}
     #sudo -E echo "${SERVER_NFS} *(rw,no_root_squash,no_all_squash,sync,anonuid=501,anongid=501)" >> /etc/exports
-    sudo -E echo "${SERVER_NFS} *(rw,sync,no_root_squash,no_subtree_check)" >> /etc/exports
+    echo "${SERVER_NFS} *(rw,sync,no_root_squash,no_subtree_check)" | sudo tee -a /etc/exports
     showmount -e ${SERVER_IP}
 else 
     printf "VCAC-A does Not support on ${DISTRO}\n"
@@ -70,11 +71,35 @@ if [[ "$Token" == "" ]]; then
     Token=`sudo docker swarm join-token -q worker`
 fi
 
-echo $Token > "${SERVER_NFS}/token.txt"
+echo $Token | sudo tee "${SERVER_NFS}/token.txt"
 
 
 printf "##########################################################\n"
 printf "############ login to the Node and setup the env   #######\n"
 printf "##########################################################\n"
-exec Swarm_vcac-a_node_setup.sh $Token 
+exec swarm_vcac-a_node_setup.sh $Token 
 
+printf "##########################################################\n"
+printf "############ update the node label                 #######\n"
+printf "##########################################################\n"
+logfile=node.txt
+
+sudo -E docker node ls -q > $logfile
+
+idx=1
+for line in $(cat $logfile)
+do
+    #echo ${line}
+    node=$(awk 'NR=='$idx' {print $1}' ${logfile})
+    flag=$(awk 'NR=='$idx' {print $2}' ${logfile})
+    if [[ $idx == 1 ]]; then
+        echo "master"
+        sudo docker node update $node --label-add ${SEVER_LABEL}=true
+    else
+        echo "worker"
+        sudo docker node update $node --label-add ${NODE_LAEL}=true
+    fi
+    #echo $idx $node $flag
+    : $(( idx++ ))
+done
+rm -f $logfile

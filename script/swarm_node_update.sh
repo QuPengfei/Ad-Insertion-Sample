@@ -12,7 +12,7 @@ do
     #echo ${line}
     node=$(awk 'NR=='$idx' {print $1}' ${logfile})
     flag=$(awk 'NR=='$idx' {print $2}' ${logfile})
-    if [[ $flag == "" ]]; then
+    if [[ $idx == 1 ]]; then
         echo "master"
         #sudo docker node update $node --label-add ad-insert-manager=true
     else
