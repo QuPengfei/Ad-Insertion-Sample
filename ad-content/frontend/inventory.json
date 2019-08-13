@@ -1,4 +1,14 @@
 [
+    {"uri" : "http://ad-content:8080/DogFood1_15.mp4",
+     "navigation_url" : "http://www.intel.com",
+     "keywords" : ["dog", "cow", "horse", "sheep", "family"],
+     "duration" : "10"
+    },
+    {"uri" : "http://ad-content:8080/BoatAdvertisement1.mp4",
+     "navigation_url" : "http://www.intel.com",
+     "keywords" : ["boat", "aeroplane", "sports"],
+     "duration" : "10"
+    },
     {"uri" : "http://ad-content:8080/BTPVP031919A_Intel_AdoptADog_FINAL_032819.mp4",
      "navigation_url" : "http://www.intel.com",
      "keywords" : ["dog", "cow", "horse", "sheep", "family"],
@@ -37,6 +47,16 @@
     {"uri" : "http://ad-content:8080/SkateBoard_15.mp4",
      "navigation_url" : "http://www.intel.com",
      "keywords" : ["anger", "sad", "neutral"],
+     "duration" : "10"
+    },
+    {"uri" : "http://ad-content:8080/HorseScene2_15.mp4",
+     "navigation_url" : "http://www.intel.com",
+     "keywords" : ["HorseScene1_blue_man","HorseScene1_red_woman"],
+     "duration" : "10"
+    },
+    {"uri" : "http://ad-content:8080/SkateBoard_15.mp4",
+     "navigation_url" : "http://www.intel.com",
+     "keywords" : ["WalkScene1_grey_man", "WalkScene1_blue_man"],
      "duration" : "10"
     }
 ]
