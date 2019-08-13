@@ -63,28 +63,38 @@ class MetaDataHandler(web.RequestHandler):
         return True
 
     def getclip(self):
-        max_matched_idx = -1
-        max_matched_num = -1
+        clip_matched_list=[]
         for idx_clip, clip in enumerate(self.inventory):
-            cur_max_matched_num = -1 
+            clip_matched_list.append(0)
             for idx_item,item in enumerate(self.keywords):
                 if item["keyword"] in clip["keywords"]:
-                    cur_max_matched_num += item["num"]
+                    clip_matched_list[idx_clip] += item["num"]
 
             for item in self.user_keywords:
                 if item in clip["keywords"]:
-                    cur_max_matched_num += 1
+                    clip_matched_list[idx_clip] += 1
 
-            if cur_max_matched_num > max_matched_num:
-                max_matched_num = cur_max_matched_num
-                max_matched_idx = idx_clip
+        max_value = max(clip_matched_list)
+        #print(self.inventory,flush=True)
+        print(self.keywords,flush=True)
+        print(clip_matched_list,flush=True)
 
-        if max_matched_idx == -1:
-            max_matched_idx = random.randint(0,len(self.inventory))
+        max_matched_idx=-1
+        if max_value == 0:
             if self.bench_mode:
+                max_matched_idx = random.randint(0,len(self.inventory))
                 return self.inventory[max_matched_idx]["uri"]
             return None
-
+        else:
+            if clip_matched_list.count(max_value) == 1:
+                max_matched_idx=clip_matched_list.index(max_value)
+            else:
+                clip_idx=[]
+                for _idx, num in enumerate(clip_matched_list):
+                    if num == max_value: clip_idx.append(_idx)
+                max_matched_idx = clip_idx[random.randint(0,len(clip_idx)-1)]
+        print(max_matched_idx,flush=True)
+        print(self.inventory[max_matched_idx]["uri"],flush=True)
         return self.inventory[max_matched_idx]["uri"]
 
     @gen.coroutine
