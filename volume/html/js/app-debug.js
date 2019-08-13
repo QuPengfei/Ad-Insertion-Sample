@@ -100,7 +100,7 @@ $("[analytics-console]").on(":initpage", function () {
                 $.each(objects, function (time,v2) {
                     var div1=page.parent().find("[analytics-template]").clone(false).removeAttr("analytics-template");
                     var ts1=parseInt(time,10);
-                    var hidden_list={Unknown:0};
+                    var hidden_list={Unknown:0,Unknown_Person:1};
                     var label;
                     div1.find("[timestring]").text([Math.floor(ts1/3600)%24,Math.floor(ts1/60)%60,ts1%60].map(v=>v<10?'0'+v:v).join(':'));
                     if ("d" in v2) {
@@ -115,7 +115,7 @@ $("[analytics-console]").on(":initpage", function () {
                     }
                     if ("f" in v2) {
                         label=v2.f.label
-                        if (v2.f.label != "Unknown") {
+                        if (!(label in hidden_list)) {
                             div1.find("[labelstring]").text(v2.f.label);
                             div1.find("[baseimage]").attr("src","image/"+v2.f.label+".jpg").width(40).height(40);
                         }
