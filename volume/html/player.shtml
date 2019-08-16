@@ -2,15 +2,34 @@
 
   <table class="unstriped" style="table-layout:fixed;position:relative" ><tbody>
     <tr>
-        <td style="width:80%;height:100%;vertical-align:top" video-section>
+        <td style="width:84%;height:100%;vertical-align:top" video-section>
             <div class="input-group">
                 <span class="input-group-label" style="width:15%"><b>Video URL:</b></span>
                 <input class="input-group-field" type="text" name="url" disabled>
             </div>
             <div>
-                <video controls="true" autoplay muted style="width:100%;height:100%"></video>
+                <video controls="true" autoplay muted style="width:85%;height:100%"></video>
 
-                <div analytics-console style="display:block;display:none;position:absolute;opacity:0.9;width:240px;height:100%;top:60px;left:0px;background-color:white;overflow:auto;pointer-events:none">
+                <div analytics-console style="color:white;display:black;display:none;position:absolute;opacity:0.9;width:350px;height:100%;top:60px;right:0px;background-color:black;overflow:auto;pointer-events:none">
+                </div>
+
+
+                <div workloads-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 500px);right:0px;overflow:hidden">
+                    <div style="width:350px;height:250px">
+                         <canvas workloads-chart width="350" height="250"></canvas>
+                    </div>
+                </div>
+
+                <div adstats-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 250px);right:0px;overflow:hidden">
+                    <div style="width:350px;height:250px">
+                         <canvas adstats-chart width="350" height="250"></canvas>
+                    </div>
+                </div>
+
+                <div analyticPerf-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 750px);right:0px;overflow:hidden">
+                    <div style="width:350px;height:250px">
+                         <canvas analyticPerf-chart width="350" height="250"></canvas>
+                    </div>
                 </div>
 
                 <div analytics-template class="media-object" style="display:none">
@@ -21,7 +40,7 @@
                 </div>
             </div>
         <td>
-        <td style="width:20%;height:100%;vertical-align:top" playlist-section>
+        <td style="width:16%;height:100%;vertical-align:top" playlist-section>
             <table class="unstripped" style="table-layout:fixed">
                 <thead style="display:block"><td style="background-color:darkgray">Playlist:</td></thead>
                 <tbody play-list style="display:block;height:calc(100vh - 140px);overflow:auto"></tbody>
@@ -33,24 +52,6 @@
   <div debug-console style="display:none;position:absolute;z-index:9;background-color:white;color:black;opacity:0.9;width:600px;height:400px;top:185px;left:570px;resize:both;overflow:auto;white-space:pre;padding-top:24px">
       <div console-title style="position:relative;cursor:move;text-align:center;vertical-align:center;z-index:10;background-color:#2196f3;color:#fff;top:-72px;height:24px">Debug Console</div>
       <button class="close-button" type="button" style="z-index:10;right:0px;top:-4px"><span aria-hidden="true" style="color:black">&times;</span></button>
-  </div>
-
-  <div workloads-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:300px;height:250px;top:calc(100vh - 250px);right:0px;overflow:hidden">
-      <div style="width:300px;height:250px">
-          <canvas workloads-chart width="300" height="250"></canvas>
-      </div>
-  </div>
-
-  <div adstats-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:300px;height:250px;top:calc(100vh - 250px);right:600px;overflow:hidden">
-      <div style="width:300px;height:250px">
-          <canvas adstats-chart width="300" height="250"></canvas>
-      </div>
-  </div>
-
-  <div analyticPerf-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:300px;height:250px;top:calc(100vh - 250px);right:300px;overflow:hidden">
-      <div style="width:300px;height:250px">
-          <canvas analyticPerf-chart width="300" height="250"></canvas>
-      </div>
   </div>
 
 </div>
