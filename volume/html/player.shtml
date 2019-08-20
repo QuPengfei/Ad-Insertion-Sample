@@ -2,7 +2,7 @@
 
   <table class="unstriped" style="table-layout:fixed;position:relative" ><tbody>
     <tr>
-        <td style="width:84%;height:100%;vertical-align:top" video-section>
+        <td style="width:85%;height:100%;vertical-align:top" video-section>
             <div class="input-group">
                 <span class="input-group-label" style="width:15%"><b>Video URL:</b></span>
                 <input class="input-group-field" type="text" name="url" disabled>
@@ -14,19 +14,19 @@
                 </div>
 
 
-                <div workloads-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 500px);right:0px;overflow:hidden">
+                <div workloads-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 600px);right:0px;overflow:hidden">
                     <div style="width:350px;height:250px">
                          <canvas workloads-chart width="350" height="250"></canvas>
                     </div>
                 </div>
 
-                <div adstats-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 250px);right:0px;overflow:hidden">
+                <div adstats-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 300px);right:0px;overflow:hidden">
                     <div style="width:350px;height:250px">
                          <canvas adstats-chart width="350" height="250"></canvas>
                     </div>
                 </div>
 
-                <div analyticPerf-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 750px);right:0px;overflow:hidden">
+                <div analyticPerf-console style="display:none;position:absolute;background-color:white;opacity:0.9;width:350px;height:250px;top:calc(100vh - 900px);right:0px;overflow:hidden">
                     <div style="width:350px;height:250px">
                          <canvas analyticPerf-chart width="350" height="250"></canvas>
                     </div>
@@ -40,7 +40,7 @@
                 </div>
             </div>
         <td>
-        <td style="width:16%;height:100%;vertical-align:top" playlist-section>
+        <td style="width:15%;height:100%;vertical-align:top" playlist-section>
             <table class="unstripped" style="table-layout:fixed">
                 <thead style="display:block"><td style="background-color:darkgray">Playlist:</td></thead>
                 <tbody play-list style="display:block;height:calc(100vh - 140px);overflow:auto"></tbody>
