@@ -31,12 +31,12 @@
     },
     {"uri" : "http://ad-content:8080/BTPVP031919F_Intel_Train_FINAL_040319_Generic.mp4",
      "navigation_url" : "http://www.intel.com",
-     "keywords" : ["train", "bus"],
+     "keywords" : ["train", "bottle","sofa", "chair", "family", "dinningtable"],
      "duration" : "10"
     },
     {"uri" : "http://ad-content:8080/BTPVP031919F_Intel_Train_FINAL_040319_Generic.mp4", 
      "navigation_url" : "http://www.intel.com",
-     "keywords" : ["bottle", "sofa", "chair", "family", "dinningtable"],
+     "keywords" : ["sofa", "chair", "family", "dinningtable"],
      "duration" : "10"
     },
     {"uri" : "http://ad-content:8080/AmusementPark10_1.mp4",
