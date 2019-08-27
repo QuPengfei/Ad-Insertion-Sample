@@ -1,24 +1,17 @@
 #!/usr/bin/env bash
 
-logfile=node.txt
+printf "##########################################################\n"
+printf "############ update the node label                 #######\n"
+printf "##########################################################\n"
+SEVER_LABEL=ad-insert-manager
+NODE_LABEL=ad-insert-worker-hkh
 
-#node_list=$(`sudo -E docker node ls|awk '{print $1}' `)
-sudo -E docker node ls -q > $logfile 
+node=`sudo -E docker node ls  -f "role=manager" -q `
+echo "manager" $node $SEVER_LABEL
+echo "sudo docker node update $node --label-add ${SEVER_LABEL}=true"
+sudo docker node update $node --label-add ${SEVER_LABEL}=true
 
-idx=1
-#cat ${logfile} | while read line
-for line in $(cat $logfile)
-do 
-    #echo ${line}
-    node=$(awk 'NR=='$idx' {print $1}' ${logfile})
-    flag=$(awk 'NR=='$idx' {print $2}' ${logfile})
-    if [[ $idx == 1 ]]; then
-        echo "master"
-        #sudo docker node update $node --label-add ad-insert-manager=true
-    else
-        echo "worker"
-        #sudo docker node update $node --label-add ad-insert-worker=true
-    fi
-    echo $idx $node $flag
-    : $(( idx++ ))
-done
+node=`sudo -E docker node ls  -f "role=worker" -q `
+echo "worker" $node $NODE_LABEL
+echo "sudo docker node update $node --label-add ${NODE_LABEL}=true"
+sudo docker node update $node --label-add ${NODE_LABEL}=true

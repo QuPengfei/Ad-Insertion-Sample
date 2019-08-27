@@ -37,10 +37,11 @@ puts "\n************************************************************************
 puts "\n                 Add this card in the swarm mode node                               "
 puts "\n************************************************************************************"
 
-expect "${username}@*"  {send "docker swarm join --token ${token} ${NODE_IP}:${port}\r"}
+expect "${username}@*"  {send "docker swarm join --token ${token} ${SERVER_IP}:${port}\r"}
 
 puts "\n************************************************************************************"
 puts "\n                 Return to master to setup the node label                           "
 puts "\n************************************************************************************"
 
-expect "${username}@*"  {send "exit\r"}
+interact
+#expect "${username}@*"  {send "exit\r"}

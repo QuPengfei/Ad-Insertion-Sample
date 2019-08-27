@@ -62,7 +62,7 @@ printf "##########################################################\n"
 Token=`sudo -E docker swarm join-token -q worker`
 
 if [[ "$Token" == "" ]]; then
-    T1=`sudo -E docker swarm init|grep token`
+    T1=`sudo -E docker swarm init --advertise-addr 172.32.1.254 |grep token`
     echo $T1
     T2="To"
     #echo $(expr index "$T1" "$T2")
@@ -77,29 +77,19 @@ echo $Token | sudo tee "${SERVER_NFS}/token.txt"
 printf "##########################################################\n"
 printf "############ login to the Node and setup the env   #######\n"
 printf "##########################################################\n"
-exec swarm_vcac-a_node_setup.sh $Token 
+exec ./swarm_vcac-a_node_setup.sh $Token 
 
 printf "##########################################################\n"
 printf "############ update the node label                 #######\n"
 printf "##########################################################\n"
 logfile=node.txt
 
-sudo -E docker node ls -q > $logfile
+sudo -E docker node ls  -f "role=manager" -q > $logfile
+echo "label manager"
+sudo docker node update $node --label-add ${SEVER_LABEL}=true
+        
+sudo -E docker node ls  -f "role=worker" -q > $logfile
+echo "worker"
+sudo docker node update $node --label-add ${NODE_LAEL}=true
 
-idx=1
-for line in $(cat $logfile)
-do
-    #echo ${line}
-    node=$(awk 'NR=='$idx' {print $1}' ${logfile})
-    flag=$(awk 'NR=='$idx' {print $2}' ${logfile})
-    if [[ $idx == 1 ]]; then
-        echo "master"
-        sudo docker node update $node --label-add ${SEVER_LABEL}=true
-    else
-        echo "worker"
-        sudo docker node update $node --label-add ${NODE_LAEL}=true
-    fi
-    #echo $idx $node $flag
-    : $(( idx++ ))
-done
 rm -f $logfile
