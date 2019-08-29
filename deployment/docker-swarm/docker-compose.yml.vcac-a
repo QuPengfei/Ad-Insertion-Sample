@@ -136,7 +136,7 @@ services:
             - kafka-service
             - zookeeper
         environment:
-            AD_INTERVALS: 8
+            AD_INTERVALS: 12 
             AD_DURATION: 10 
             AD_BENCH_MODE: 0
         networks:
@@ -161,7 +161,7 @@ services:
     cdn:
         image: ssai_cdn_service:latest
         ports:
-            - "443:8080"
+            - "80:8080"
         depends_on:
             - ad-insertion-frontend
             - kafka-service
@@ -237,43 +237,53 @@ services:
         networks:
             - mynet1
         deploy:
-            replicas: 1
+            replicas: 4 
             placement:
                 constraints: [node.labels.ad-insert-manager == true]
 
     #video-analytic-ffmpeg:
     #    image: video_analytics_service_ffmpeg:latest
-    #    volumes:
-    #        - ${GALLERY_VOLUME}:/gallery
     #    depends_on:
     #        - content-provider
     #        - kafka-service
     #        - zookeeper
-    #    deploy:
-    #        replicas: 1
     #    environment:
     #        NETWORK_PREFERENCE: "{\"CPU\":\"FP32\"}"
+    #        VA_PRE: "Xeon-"
+    #    networks:
+    #        - mynet1
+    #    deploy:
+    #        replicas: 1
+    #        placement:
+    #            constraints: [node.labels.ad-insert-manager == true]
     #    restart: unless-stopped
 
     #video-analytic-gstreamer:
     #    image: video_analytics_service_gstreamer:latest
-    #    volumes:
-    #        - ${GALLERY_VOLUME}:/gallery
     #    depends_on:
     #        - content-provider
     #        - kafka-service
     #        - zookeeper
+    #    environment:
+    #        NETWORK_PREFERENCE: "{\"CPU\":\"FP32\"}"
+    #        VA_PRE: "Xeon-"
+    #    networks:
+    #        - mynet1
     #    deploy:
-    #        replicas: 1
+    #        replicas: 1 
+    #        placement:
+    #            constraints: [node.labels.ad-insert-manager == true]
     #    restart: unless-stopped
 
     #video-analytic-ffmpeg-vcac-a:
     #    image: docker
-    #    command: "docker run --user root -v /tmp:/tmp -v /var/tmp:/var/tmp --device=/dev/ion:/dev/ion --privileged --network adinsert_mynet1 video_analytics_service_ffmpeg_vcac_a:latest"
+    #    command: "docker run --env VA_PRE=VCAC-A- --user root -v /tmp:/tmp -v /var/tmp:/var/tmp --device=/dev/ion:/dev/ion --privileged --network adinsert_mynet1 video_analytics_service_ffmpeg_vcac_a:latest"
     #    depends_on:
     #        - content-provider
     #        - kafka-service
     #        - zookeeper
+    #    environment:
+    #        VA_PRE: "VCAC-A"
     #    volumes:
     #        - /var/run/docker.sock:/var/run/docker.sock
     #    networks:
@@ -286,17 +296,19 @@ services:
 
     video-analytic-gstreamer-vcac-a:
         image: docker
-        command: "docker run --user root -v /tmp:/tmp -v /var/tmp:/var/tmp --device=/dev/ion:/dev/ion --privileged --network adinsert_mynet1 video_analytics_service_gstreamer_vcac_a:latest"
+        command: "docker run --env VA_PRE=VCAC-A- --user root -v /tmp:/tmp -v /var/tmp:/var/tmp --device=/dev/ion:/dev/ion --privileged --network adinsert_mynet1 video_analytics_service_gstreamer_vcac_a:latest"
         depends_on:
             - content-provider
             - kafka-service
             - zookeeper
+        environment:
+            VA_PRE: "VCAC-A"
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         networks:
             - mynet1
         deploy:
-            replicas: 1
+            replicas: 4 
             placement:
                 constraints: [node.labels.ad-insert-worker-hkh == true]
         restart: unless-stopped
