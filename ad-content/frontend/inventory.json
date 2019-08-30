@@ -9,29 +9,19 @@
      "keywords" : ["boat", "aeroplane", "sports"],
      "duration" : "10"
     },
-    {"uri" : "http://ad-content:8080/BTPVP031919A_Intel_AdoptADog_FINAL_032819.mp4",
-     "navigation_url" : "http://www.intel.com",
-     "keywords" : ["dog", "cow", "horse", "sheep", "family"],
-     "duration" : "10"
-    },
-    {"uri" : "http://ad-content:8080/BTPVP031919B_Intel_Boat_FINAL_032819.mp4",
-     "navigation_url" : "http://www.intel.com",
-     "keywords" : ["boat", "aeroplane", "sports"],
-     "duration" : "10"
-    },
     {"uri" : "http://ad-content:8080/BTPVP031919D_Intel_Motorcycle_FINAL_040319_SneakersONLY.mp4",
      "navigation_url" : "http://www.intel.com",
      "keywords" : ["motorbike", "bicycle", "sports"],
      "duration" : "10"
     },
-    {"uri" : "http://ad-content:8080/BTPVP031919E_Intel_Car_FINAL_032819.mp4",
+    {"uri" : "http://ad-content:8080/DesertCar_10_081419.mp4",
      "navigation_url" : "http://www.intel.com",
      "keywords" : ["car", "family"],
      "duration" : "10"
     },
     {"uri" : "http://ad-content:8080/BTPVP031919F_Intel_Train_FINAL_040319_Generic.mp4",
      "navigation_url" : "http://www.intel.com",
-     "keywords" : ["train", "bottle","sofa", "chair", "family", "dinningtable"],
+     "keywords" : ["train" ],
      "duration" : "10"
     },
     {"uri" : "http://ad-content:8080/BTPVP031919F_Intel_Train_FINAL_040319_Generic.mp4", 
