@@ -2,8 +2,19 @@
 
 DIR=$(dirname $(readlink -f "$0"))
 
-yml="$DIR/docker-compose.$(hostname).yml"
-test -f "$yml" || yml="$DIR/docker-compose.yml"
+PLATFORM=$2
+SWARM_NAME="adinsert"
+if test -n $PLATFORM; then
+    SWARM_NAME="adinsert_${PLATFORM}"
+else
+    PLATFORM="Xeon"
+fi
+
+yml="$DIR/docker-compose.$(hostname).yml.${PLATFORM}"
+test -f "$yml" || yml="$DIR/docker-compose.yml.${PLATFORM}"
+
+echo "Platform $PLATFORM with name $SWARM_NAME $yml."
+
 case "$1" in
 docker_compose)
     dcv="$(docker-compose --version | cut -f3 -d' ' | cut -f1 -d',')"
@@ -15,10 +26,10 @@ docker_compose)
         echo ""
         exit 0
     fi
-    sudo docker-compose -f "$yml" -p adinsert --compatibility down
+    sudo docker-compose -f "$yml" -p "$SWARM_NAME" --compatibility down
     ;;
 *)
-    sudo docker stack rm adinsert
+    sudo docker stack rm "$SWARM_NAME"
     ;;
 esac
 

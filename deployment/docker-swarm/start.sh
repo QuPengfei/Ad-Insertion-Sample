@@ -17,8 +17,18 @@ sudo docker network prune -f
 rm -rf "${AD_DASH_VOLUME}" "${AD_HLS_VOLUME}"
 mkdir -p "${AD_DASH_VOLUME}" "${AD_HLS_VOLUME}"
 
-yml="$DIR/docker-compose.$(hostname).yml"
-test -f "$yml" || yml="$DIR/docker-compose.yml"
+PLATFORM=$2
+SWARM_NAME="adinsert"
+if test -n $PLATFORM; then
+    SWARM_NAME="adinsert_${PLATFORM}"
+else
+    PLATFORM="Xeon"
+fi
+
+yml="$DIR/docker-compose.$(hostname).yml.${PLATFORM}"
+test -f "$yml" || yml="$DIR/docker-compose.yml.${PLATFORM}"
+
+echo "Platform $PLATFORM with name $SWARM_NAME $yml."
 
 case "$1" in
 docker_compose)
@@ -32,15 +42,15 @@ docker_compose)
         exit 0
     fi
 
-    . "$DIR/self-sign.sh"
+#    . "$DIR/self-sign.sh"
     export USER_ID=$(id -u)
     export GROUP_ID=$(id -g)
-    sudo -E docker-compose -f "$yml" -p adinsert --compatibility up
+    sudo -E docker-compose -f "$yml" -p "$SWARM_NAME" --compatibility up
     ;;
 *)
-    . "$DIR/self-sign.sh"
+#    . "$DIR/self-sign.sh"
     export USER_ID=$(id -u)
     export GROUP_ID=$(id -g)
-    sudo -E docker stack deploy -c "$yml" adinsert
+    sudo -E docker stack deploy -c "$yml" "$SWARM_NAME"
     ;;
 esac
