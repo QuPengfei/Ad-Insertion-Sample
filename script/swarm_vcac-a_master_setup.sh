@@ -82,14 +82,3 @@ exec ./swarm_vcac-a_node_setup.sh $Token
 printf "##########################################################\n"
 printf "############ update the node label                 #######\n"
 printf "##########################################################\n"
-logfile=node.txt
-
-sudo -E docker node ls  -f "role=manager" -q > $logfile
-echo "label manager"
-sudo docker node update $node --label-add ${SEVER_LABEL}=true
-        
-sudo -E docker node ls  -f "role=worker" -q > $logfile
-echo "worker"
-sudo docker node update $node --label-add ${NODE_LAEL}=true
-
-rm -f $logfile

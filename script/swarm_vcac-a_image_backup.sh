@@ -14,5 +14,5 @@ sudo docker image save video_analytics_service_gstreamer_vcac_a:latest -o video_
 echo "sudo docker image save video_analytics_service_ffmpeg_vcac_a:latest -o video_analytics_service_ffmpeg_vcac_a-latest.tar"
 sudo docker image save video_analytics_service_ffmpeg_vcac_a:latest -o video_analytics_service_ffmpeg_vcac_a-latest.tar
 
-echo "sudo docekr image save docker:latest -o docker-latest.tar"
-sudo docekr image save docker:latest -o docker-latest.tar
+echo "sudo docker image save docker:latest -o docker-latest.tar"
+sudo docker image save docker:latest -o docker-latest.tar
