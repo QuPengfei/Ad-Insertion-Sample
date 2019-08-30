@@ -45,7 +45,7 @@ class Schedule(object):
             },
             "ad_config": {
                 "codec": seg_info["codec"],
-                 "resolution": seg_info["resolution"],
+                "resolution": seg_info["resolution"],
                 "bandwidth": seg_info["bandwidth"],
                 "streaming_type": seg_info["streaming_type"],
                 "duration": seg_info["ad_duration"],

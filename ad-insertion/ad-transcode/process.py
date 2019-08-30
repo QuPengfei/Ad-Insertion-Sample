@@ -79,6 +79,7 @@ def ADClipDecision(msg, db):
         metaData = db.query(msg.content, msg.time_range, msg.time_field)
         if metaData or msg.bench_mode:
             try:
+                print(metaData,flush=True)
                 jdata = json.dumps({
                     "metadata":metaData,
                     "user":{

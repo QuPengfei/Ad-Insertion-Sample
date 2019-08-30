@@ -119,6 +119,7 @@ class MetaDataHandler(web.RequestHandler):
             random.shuffle(self.inventory)
             #print(self.request.body.decode('utf-8'))
             data = json.loads(self.request.body.decode('utf-8'))
+            print(data["metadata"],flush=True)
             self.user_name = data["user"]["name"]
             self.user_keywords = data["user"]["keywords"]
             self.bench_mode = data["bench_mode"]
