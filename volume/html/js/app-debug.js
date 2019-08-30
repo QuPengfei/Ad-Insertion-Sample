@@ -196,7 +196,7 @@ $("[workloads-console]").on(":initpage",function (e) {
             maintainAspectRatio: false,
             title: {
                 display: true,
-                text: 'Server Workloads',
+                text: 'Server Workloads \n adtx:AD transcoding \n tx:Content transcoding',
             },
             scales: {
                 yAxes: [{

@@ -32,10 +32,10 @@ $("#setting").find("form").submit(function() {
 
     if ($("#playListSwitch").is(":checked")) {
         $("#player [playlist-section]").show();
-        $("#player [video-section]").width("70%");
+        $("#player [video-section]").width("75%");
     } else {
         $("#player [playlist-section]").hide();
-        $("#player [video-section]").width("100%");
+        $("#player [video-section]").width("90%");
     }
  
     /* ["obj_detection", "emotion", "face_recognition"] */
