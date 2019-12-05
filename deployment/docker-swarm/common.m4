@@ -143,8 +143,8 @@ ifelse(defn(`PLATFORM'),`VCAC-A',`dnl
             - kafka-service
             - zookeeper
         environment:
-            AD_INTERVALS: 8
-            AD_DURATION: 5
+            AD_INTERVALS: 12 
+            AD_DURATION: 10
             AD_BENCH_MODE: 0
 ifelse(defn(`PLATFORM'),`VCAC-A',`dnl
         networks:
@@ -259,7 +259,7 @@ ifelse(defn(`PLATFORM'),`VCAC-A',`dnl
             - default_net
 ')dnl
         deploy:
-            replicas: 1
+            replicas: 3 
             placement:
                 constraints:
                     - node.role==manager

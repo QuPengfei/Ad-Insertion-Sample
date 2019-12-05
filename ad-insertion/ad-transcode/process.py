@@ -125,6 +125,24 @@ class KafkaMsgParser(object):
         redition = ([self.width, self.height, self.bitrate, 128000],)
         return redition
 
+    def GetFixRedition(self,height):
+        #redition = ([self.width, self.height, self.bitrate, 128000],)
+        renditions_local=(
+        # resolution  bitrate(kbps)  audio-rate(kbps)
+            [3840, 2160, 14000000, 192000],
+            [2560, 1440, 10000000, 192000],
+            [1920, 1080, 5000000, 192000],
+            [1280, 720, 2800000, 192000],
+            [842, 480, 1400000, 128000],
+            [640, 360, 800000, 128000]
+        )
+        for item in renditions_local:
+            if item[1] == height:
+                redition = (item,)
+                return redition
+        redition = ([842, 480, 1400000, 128000],)
+        return redition
+
 # this will
 def CopyAD(msg,height,height_list=[2160, 1440, 1080, 720, 480, 360]):
     source_path = msg.target_path
@@ -190,6 +208,7 @@ def SignalIncompletion(name):
 
 def ADTranscode(kafkamsg,db):
     zk = None
+    height=720
 
     msg=KafkaMsgParser(kafkamsg)
     # add zk state for each resolution file if we generate the ad clip each time for one solution
@@ -226,11 +245,13 @@ def ADTranscode(kafkamsg,db):
 
         try:
             # only generate one resolution for ad segment, if not generated, ad will fall back to skipped ad.
-            cmd = GetABRCommand(stream, msg.target_path, msg.streaming_type, msg.GetRedition(), duration=msg.segment_duration, fade_type="audio", content_type="ad")
+            #cmd = GetABRCommand(stream, msg.target_path, msg.streaming_type, msg.GetRedition(), duration=msg.segment_duration, fade_type="audio", content_type="ad")
+            cmd = GetABRCommand(stream, msg.target_path, msg.streaming_type, msg.GetFixRedition(height), duration=msg.segment_duration, fade_type="audio", content_type="ad")
             process_id = subprocess.Popen(cmd,stdout=subprocess.PIPE)
             # the `multiprocessing.Process` process will wait until
             # the call to the `subprocess.Popen` object is completed
             process_id.wait()
+            CopyAD(msg,height)
             SignalCompletion(msg.target)
             zk.process_end()
         except Exception as e:

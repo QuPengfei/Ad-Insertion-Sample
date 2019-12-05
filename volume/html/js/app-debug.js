@@ -100,7 +100,7 @@ $("[analytics-console]").on(":initpage", function () {
                 $.each(objects, function (time,v2) {
                     var div1=page.parent().find("[analytics-template]").clone(false).removeAttr("analytics-template");
                     var ts1=parseInt(time,10);
-                    var hidden_list={Unknown:0};
+                    var hidden_list={Unknown:0,Unknown_Person:1,horse:2,sheep:3,tvmonitor:4,bird:5,bottle:6};
                     var label;
                     div1.find("[timestring]").text([Math.floor(ts1/3600)%24,Math.floor(ts1/60)%60,ts1%60].map(v=>v<10?'0'+v:v).join(':'));
                     if ("d" in v2) {
