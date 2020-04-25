@@ -18,7 +18,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y -q --no-
 
 COPY --from=build /home/build/ /usr/lib/python3/dist-packages
 COPY --from=build /home/video-analytics-serving/vaserving /home/vaserving
+
 COPY models/ /home/models/
+RUN mv /home/models/object_detection/1/mobilenet-ssd.json.gst /home/models/object_detection/1/mobilenet-ssd.json && \
+    mv /home/models/emotion_recognition/1/emotions-recognition-retail-0003.json.gst /home/models/emotion_recognition/1/emotions-recognition-retail-0003.json && \
+    mv /home/models/face_detection_adas/1/face-detection-adas-0001.json.gst /home/models/face_detection_adas/1/face-detection-adas-0001.json && \
+    mv /home/models/face_detection_retail/1/face-detection-retail-0004.json.gst /home/models/face_detection_retail/1/face-detection-retail-0004.json && \
+    mv /home/models/landmarks_regression/1/landmarks-regression-retail-0009.json.gst /home/models/landmarks_regression/1/landmarks-regression-retail-0009.json
+
 COPY gallery/ /home/gallery/
 COPY VCAC-A/gst/pipelines/ /home/pipelines/
 COPY *.py /home/
