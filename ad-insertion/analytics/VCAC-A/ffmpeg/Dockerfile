@@ -6,8 +6,7 @@ FROM ${base_name} as build
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -qq git ca-certificates python3 python3-pip && rm -rf /var/lib/apt/lists/*
 ARG VA_SERVING_REPO=https://gitlab.devtools.intel.com/video-analytics/video-analytics-serving.git
-ARG VA_SERVING_BRANCH="updates_for_integration"
-ARG VA_SERVING_TAG="3a273ae3cfb32adb1aef05b9b7d948029fc2d91e"
+ARG VA_SERVING_BRANCH="develop"
 
 RUN  git clone ${VA_SERVING_REPO} -b ${VA_SERVING_BRANCH} --depth 1
 

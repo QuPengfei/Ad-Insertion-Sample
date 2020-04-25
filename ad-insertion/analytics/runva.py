@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from vaserving.PipelineManager import PipelineManager
-from vaserving.ModelManager import ModelManager
+from vaserving.pipeline_manager import PipelineManager
+from vaserving.model_manager import ModelManager
 from concurrent.futures import ThreadPoolExecutor
 from gi.repository import GLib
 import time
