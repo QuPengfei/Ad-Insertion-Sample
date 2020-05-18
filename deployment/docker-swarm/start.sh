@@ -7,11 +7,13 @@ export AD_SEGMENT_VOLUME=$(readlink -f "$DIR/../../volume/ad/segment")
 export AD_STATIC_VOLUME=$(readlink -f "$DIR/../../volume/ad/static")
 export VIDEO_ARCHIVE_VOLUME=$(readlink -f "$DIR/../../volume/video/archive")
 export VIDEO_CACHE_VOLUME=$(readlink -f "$DIR/../../volume/video/cache")
+export WORKLOAD_LOGS_VOLUME=$(readlink -f "$DIR/../../volume/logs/workload")
 
 docker container prune -f
 docker volume prune -f
 docker network prune -f
 
+rm -f "${WORKLOAD_LOGS_VOLUME}/*"
 for mode in dash hls; do
     rm -rf "${AD_CACHE_VOLUME}/$mode"
     mkdir -p "${AD_CACHE_VOLUME}/$mode"

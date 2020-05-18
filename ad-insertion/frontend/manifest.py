@@ -9,6 +9,10 @@ from manifest_dash import parse_dash
 import requests
 import time
 import os
+from messaging import Producer
+import json
+
+workload_topic = "workload_data"
 
 zk_manifest_prefix="/ad-insertion-manifest"
 content_provider_url = "http://content-provider-service:8080"
@@ -92,7 +96,12 @@ class ManifestHandler(web.RequestHandler):
 
         minfo=yield self._get_manifest(stream, user)
         if isinstance(minfo, dict):
-            print("Timing {0} {1} {2} manifest".format(time.time(),user,stream), flush=True)
+            workload_info = {"user":user, "type":"playback", "time":time.time(), "stream":stream}
+            print("Timing {0} {1} {2} manifest".format(workload_info["time"],user,stream), flush=True)
+            producer=Producer()
+            producer.send(workload_topic,json.dumps(workload_info))
+            producer.close()
+
             self.write(minfo["manifest"])
             self.set_header('content-type',minfo["content-type"])
             self.set_status(200, 'OK')

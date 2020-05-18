@@ -11,6 +11,10 @@ import random
 import time
 import re
 import os
+from messaging import Producer
+import json
+
+workload_topic="workload_data"
 
 zk_manifest_prefix="/ad-insertion-manifest"
 zk_segment_prefix="/ad-insertion-segment"
@@ -99,7 +103,11 @@ class SegmentHandler(web.RequestHandler):
             print("Status: 404, AD not ready", flush=True)
             self.set_status(404, "AD not ready")
         else:
-            print("Timing {0} {1} {2} X-Accel-Redirect: {3}".format(time.time(), user, stream, redirect), flush=True)
+            workload_info = {"user":user, "type":"playback", "time":time.time(), "stream":stream}
+            print("Timing {0} {1} {2} X-Accel-Redirect: {3}".format(workload_info["time"], user, stream, redirect), flush=True)
+            #producer=Producer()
+            #producer.send(workload_topic,json.dumps(workload_info))
+            #producer.close()
             if stream.find("/adstream/") != -1: self.add_header('Content-Cache','no-cache')
             self.add_header('X-Accel-Redirect',redirect)
             self.set_status(200,'OK')

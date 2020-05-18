@@ -13,25 +13,27 @@ import os
 import re
 import traceback
 
+from messaging import Producer
+import json
+
+workload_topic = "workload_data"
 
 video_analytics_topic = "seg_analytics_sched"
 machine_prefix = os.environ.get("VA_PRE")
 if machine_prefix == None:
     machine_prefix = "VA-"
-va = RunVA()
+va=RunVA()
 
 global_total_fps = 0
 global_seg_count = 0
-
 
 def process_stream(streamstring):
     streamjson = ast.literal_eval(streamstring)
     pipeline1 = streamjson["pipeline"] + "/1"
     stream = streamjson['source']['uri']
     user = streamjson["user_info"]["name"]
-    elapsed_time = time.time() - streamjson["start_time"]
-    print("VA feeder: stream: " + stream + " " + user +
-          " elapsed-time on kafka queue:" + str(elapsed_time), flush=True)
+    kafka_wait_time = time.time()-streamjson["start_time"]
+    print("VA feeder: stream: "+stream+" "+user+" elapsed-time on kafka queue:" + str(kafka_wait_time), flush=True)
 
     zk_path = None
     init_stream = None
@@ -64,8 +66,8 @@ def process_stream(streamstring):
                 stream = "file://" + merged_segment
                 print("VA feeder: video-analytics merged segment: " +
                       stream, flush=True)
-
-        fps = va.loop({
+        
+        fps,seg_elapsed_time=va.loop({
             "source": {
                 "uri": stream,
                 "type": "uri"
@@ -90,9 +92,12 @@ def process_stream(streamstring):
             global global_total_fps, global_seg_count
             global_total_fps = global_total_fps + fps
             global_seg_count = global_seg_count + 1
-            avg_fps = global_total_fps / global_seg_count
-            print("VA statistics : " + "avg_fps " + str(avg_fps) + " " +
-                  str(global_total_fps) + " " + str(global_seg_count), flush=True)
+            avg_fps = global_total_fps/global_seg_count
+            workload_info = {"user":user, "type":"analytic","fps":fps, "fps_avg":avg_fps, "fps_tot":global_total_fps, "seg_num":global_seg_count, "kafka_wait_time":kafka_wait_time, "seg_elapsed_time":seg_elapsed_time}
+            producer=Producer()
+            producer.send(workload_topic,json.dumps(workload_info))
+            producer.close()
+            print("VA statistics : "+ "avg_fps " + str(avg_fps) + " " + str(global_total_fps)+" " + str(global_seg_count),flush=True)
 
         if merged_segment:
             merge.delete_merged_segment(merged_segment)

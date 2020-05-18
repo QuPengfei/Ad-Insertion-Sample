@@ -28,6 +28,7 @@ class RunVA(object):
             return -1
 
         fps = 0
+        elapsed_time = 0
         while True:
             status = pipeline.status()
             print(status, flush=True)
@@ -39,6 +40,7 @@ class RunVA(object):
 
                 if status.state is Pipeline.State.COMPLETED:
                     fps = status.avg_fps
+                    elapsed_time = status.elapsed_time
                     print("Status analysis: Timing {0} {1} {2} {3} {4}".format(
                         reqs["start_time"], status.start_time, status.elapsed_time, reqs["user"], reqs["source"]["uri"]), flush=True)
                     break
@@ -49,7 +51,7 @@ class RunVA(object):
 
         pipeline.stop()
         print("exiting va pipeline", flush=True)
-        return fps
+        return fps, elapsed_time
 
     def close(self):
         VAServing.stop()
