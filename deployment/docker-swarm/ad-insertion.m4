@@ -5,6 +5,7 @@
             - ${AD_CACHE_VOLUME}:/var/www/adinsert:ro
             - ${AD_STATIC_VOLUME}:/var/www/adstatic:ro
             - /etc/localtime:/etc/localtime:ro
+            - ${AD_INSERT_FRONTEND_LOGS_VOLUME}:/var/log/nginx/:rw
         environment:
             AD_INTERVALS: 6
             AD_DURATION: 10

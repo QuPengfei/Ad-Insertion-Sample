@@ -7,6 +7,7 @@
         volumes:
             - ${VIDEO_ARCHIVE_VOLUME}:/var/www/archive:ro
             - ${VIDEO_CACHE_VOLUME}:/var/www/video:ro
+            - ${CONTENT_PROVIDER_LOGS_VOLUME}:/var/log/nginx/:rw
         networks:
             - appnet
         deploy:

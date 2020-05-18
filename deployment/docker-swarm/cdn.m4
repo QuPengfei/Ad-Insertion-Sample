@@ -4,6 +4,8 @@
         ports:
             - "ifelse(defn(`PLATFORM'),`Xeon',8443,443):8443"
             - "ifelse(defn(`PLATFORM'),`Xeon',8080,80):8080"
+        volumes:
+            - ${CDN_LOGS_VOLUME}:/var/log/nginx/:rw
         environment:
             NO_PROXY: "*"
             no_proxy: "*"
